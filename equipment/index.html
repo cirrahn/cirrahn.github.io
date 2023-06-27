@@ -1,0 +1,190 @@
+<head>
+    <link rel="icon" type="image/x-icon" href="https://dnd.wizards.com/sites/default/files/media/favicon_0.ico">
+    
+    <title>D&amp;D Random Equipment Generator</title>
+
+<script>
+var data = {"data":{
+    "Armour":{
+        "Light": ["Padded","Leather","Studded leather"],
+        "Medium": ["Hide","Chain shirt","Scale mail","Breastplate","Half plate"],
+        "Heavy": ["Ring mail","Chain mail","Splint","Plate"],
+        "Shield": ["Shield"]
+    },
+    "Weapons":{
+        "Simple melee": ["Club", "Dagger", "Greatclub", "Handaxe", "Javelin", "Light Hammer", "Mace", "Quarterstaff", "Sickle", "Spear"],
+        "Simple ranged": ["Crossbow, light", "Dart", "Shortbow", "Sling"],
+        "Martial melee": ["Battleaxe", "Flail", "Glaive", "Greataxe", "Greatsword", "Halberd", "Lance", "Longsword", "Maul", "Morningstar", "Pike", "Rapier", "Scimitar", "Shortsword", "Trident", "War Pick", "Warhammer", "Whip"],
+        "Martial ranged": ["Blowgun", "Crossbow, hand", "Crossbow, heavy", "Longbow", "Net"]
+    },
+    "Adventuring Gear":{
+        "General": ["Abacus", "Acid (vial)", "Alchemist's fire (flask)", "Antitoxin (vial)", "Backpack", "Ball bearings (bag of 1,000)", "Barrel", "Basket", "Bedroll", "Bell", "Blanket", "Block and tackle", "Book", "Bottle, glass", "Bucket", "Caltrops (bag of 20)", "Candle", "Case, crossbow bolt", "Case, map or scroll", "Chain (10 feet)", "Chalk (1 piece)", "Chest", "Clothes, common", "Clothes, costume", "Clothes, fine", "Clothes, traveler's", "Component pouch", "Crowbar", "Fishing tackle", "Flask or tankard", "Grappling hook", "Hammer", "Hammer, sledge", "Holy Water (flask)", "Hourglass", "Hunting trap", "Ink (1 ounce bottle)", "Ink pen", "Jug or pitcher", "Kit, climber's", "Kit, disguise", "Kit, forgery", "Kit, herbalism", "Kit, healer's", "Kit, mess", "Kit, poisoner's", "Ladder (10-foot)", "Lamp", "Lantern, bullseye", "Lantern, hooded", "Lock", "Magnifying glass", "Manacles", "Mirror, steel", "Oil (flask)", "Paper (one sheet)", "Parchment (one sheet)", "Perfume (vial)", "Pick, miner's", "Piton", "Poison, basic (vial)", "Pole (10-foot)", "Pot, iron", "Potion of Healing", "Pouch", "Quiver", "Ram, portable", "Rations (1 day)", "Robes", "Rope, hempen (50 feet)", "Rope, silk (50 feet)", "Sack", "Scale, merchant's", "Sealing wax", "Shovel", "Signal whistle", "Signet ring", "Soap", "Spellbook", "Spikes, iron (10)", "Spyglass", "Tent, two-person", "Tinderbox", "Torch", "Vial", "Waterskin", "Whetstone"],
+        "Ammunition": ["Arrows (20)", "Blowgun Needles (50)", "Crossbow bolts (20)", "Sling bullets (20)"],
+        "Arcane focus": ["Crystal", "Orb", "Rod", "Staff", "Wand"],
+        "Druidic focus": ["Sprig of mistletoe", "Totem", "Wooden staff", "Yew wand"],
+        "Holy symbol": ["Amulet", "Emblem", "Reliquary"]
+    },
+    "Tools":{
+        "Artisan's tools": ["Alchemist's supplies", "Brewer's supplies", "Calligrapher's Supplies", "Carpenter's tools", "Cartographer's tools", "Cobbler's tools", "Cook's utensils", "Glassblower's tools", "Jeweler's tools", "Leatherworker's tools", "Mason's tools", "Painter's supplies", "Potter's tools", "Smith's tools", "Tinker's tools", "Weaver's tools", "Woodcarver's tools"],
+        "Gaming sets": ["Dice set", "Dragonchess set", "Playing card set", "Three-Dragon Ante set"],
+        "Musical instruments": ["Bagpipes", "Drum", "Dulcimer", "Flute", "Lute", "Lyre", "Horn", "Pan flute", "Shawm", "Viol"],
+        "Other tools": ["Disguise kit", "Forgery kit", "Herbalism kit", "Navigator's tools", "Poisoner's kit", "Thieves' tools"]
+    },
+    "Mounts and Other Animals":{
+        "All": ["Camel", "Donkey or mule", "Elephant", "Horse, draft", "Horse, riding", "Mastiff", "Pony", "Warhorse"]
+    },
+    "Tack, Harness, and Drawn Vehicles":{
+        "All": ["Barding", "Bit and bridle", "Carriage", "Cart", "Chariot", "Animal Feed (per day)", "Saddle, Exotic", "Saddle, Military", "Saddle, Pack", "Riding", "Saddlebags", "Sled", "Stabling (per day)", "Wagon"]
+    },
+    "Waterbourne Vehicles":{
+        "All": ["Galley", "Keelboat", "Longship", "Rowboat", "Sailing ship", "Warship"]
+    },
+    "Trade Goods":{
+        "All": ["1 lb. of wheat", "1 lb. of flour or one chicken", "1 lb. of salt", "1 lb. of iron or 1 sq. yd. of canvas", "1 lb. of copper or 1 sq. yd. of cotton cloth", "1 lb. of ginger or one goat", "1 lb. of cinnamon or pepper, or one sheep", "1 lb. of cloves or one pig", "1 lb. of silver or 1 sq. yd. of linen", "1 sq. yd. of silk or one cow", "1 lb. of saffron or one ox", "1 lb. of gold", "1 lb. of platinum"]
+    }
+}}
+
+function toggleKids(checkBox) {
+    return function() { 
+        for (var i = 0; i < checkBox.checkboxChildren.length; ++i) {
+            checkBox.checkboxChildren[i].checked = checkBox.checked;
+        }
+    };
+}
+
+function checkAnyChildrenSelected(checkBox) {
+    return function() {
+        var numberSelected = 0;
+        for (var i = 0; i < checkBox.checkboxChildren.length; ++i) {
+            if (checkBox.checkboxChildren[i].checked) {
+                numberSelected++;
+            }
+        }
+        checkBox.checked = numberSelected != 0;
+    };
+}
+
+var outerChecks = [];
+
+function generate() {
+    var selectedOuters = []
+    for (var i = 0; i < outerChecks.length; ++i) {
+        if (outerChecks[i].checked) {
+            selectedOuters.push(outerChecks[i]);
+        }
+    }
+    if (selectedOuters.length == 0) {
+        return;
+    }
+    var randomNumber = Math.floor(Math.random() * selectedOuters.length);
+    
+    var outerId = selectedOuters[randomNumber].id;
+    var selectedInners = [];
+    for (var i = 0; i < selectedOuters[randomNumber].checkboxChildren.length; ++i) {
+        if (selectedOuters[randomNumber].checkboxChildren[i].checked) {
+            selectedInners.push(selectedOuters[randomNumber].checkboxChildren[i]);
+        }
+    }
+    
+    randomNumber = Math.floor(Math.random() * selectedInners.length);
+    var innerRng = selectedInners[randomNumber];
+    
+    var rngList = data.data[outerId][innerRng.id];
+    randomNumber = Math.floor(Math.random() * rngList.length);
+    
+    document.getElementById("output").innerHTML = outerId + " (" + innerRng.id +  "): " + rngList[randomNumber];
+}
+
+function init() {
+var out = document.getElementById("anchor");
+
+for (var category in data.data) {
+    var outerSelect = document.createElement("input");
+    outerSelect.type = "checkbox";
+    outerSelect.id = category;
+    outerSelect.checkboxChildren = [];
+    outerSelect.onchange = toggleKids(outerSelect);
+    
+    outerChecks.push(outerSelect);
+    
+    var outerSelectLabel = document.createElement("label");
+    outerSelectLabel.htmlFor = category;
+    outerSelectLabel.innerHTML = category;
+    outerSelectLabel.className = "noSelect";
+    
+    out.appendChild(outerSelect);
+    out.appendChild(outerSelectLabel);
+    
+    var br0 = document.createElement("br");
+    out.appendChild(br0);
+    
+    for (var subcategory in data.data[category]) {
+        var innerSelect = document.createElement("input");
+        innerSelect.type = "checkbox";
+        innerSelect.id = subcategory;
+        innerSelect.className = "tabbedSelector";
+        innerSelect.onchange = checkAnyChildrenSelected(outerSelect);
+        
+        outerSelect.checkboxChildren.push(innerSelect);
+        
+        var innerSelectLabel = document.createElement("label");
+        innerSelectLabel.htmlFor = subcategory;
+        innerSelectLabel.innerHTML = subcategory;
+        innerSelectLabel.className = "noSelect";
+        
+        out.appendChild(innerSelect);
+        out.appendChild(innerSelectLabel);
+        
+        var brX = document.createElement("br");
+        out.appendChild(brX);
+    
+        //console.log(data.data[category][subcategory]);
+    }
+    
+    var brN = document.createElement("br");
+    out.appendChild(brN);
+}
+}
+
+</script>
+<style>
+.tabbedSelector {
+    margin-left: 20px;
+}
+.wrapper {
+    margin: 0 auto; 
+    text-align: center;
+}
+.header {
+    
+}
+.content {
+    margin: 0 auto; 
+    display: inline-block; 
+    text-align: left;
+}
+.output {
+    font-weight: bold;
+    font-size: 200%;
+}
+.noSelect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none; 
+    -khtml-user-select: none;
+    -moz-user-select: none; 
+    -ms-user-select: none; 
+    user-select: none; 
+}
+</style>
+</head>
+<body onload="init()">
+<div id="wrapper" class="wrapper">
+    <h1 class="header">Random Equipment Generator</h1>
+    <div id="anchor" class="content"></div>
+    <br>
+    <button type="button" onclick="generate()">Randomize</button>
+    <br>
+    <br>
+    <div id="output" class="content output"></div>
+</div>
+</body>

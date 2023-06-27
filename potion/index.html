@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<head>
+    <link rel="icon" type="image/x-icon" href="https://dnd.wizards.com/sites/default/files/media/favicon_0.ico">
+    
+    <title>D&amp;D Random Potion Generator</title>
+
+    <script type="text/javascript" src="http://donjon.bin.sh/5e/magic_items/item_data.js"></script>
+
+    <script>
+        var by_rarity = {
+            "Common": [],
+            "Uncommon": [],
+            "Rare": [],
+            "Very Rare": [],
+            "Legendary": []
+        };
+
+        for (var key in item_data) {
+            if (item_data.hasOwnProperty(key)) {
+            
+                var item = item_data[key];
+                
+                if (item.type == "Potion") {
+                    by_rarity[item.rarity].push(item.name);
+                }
+            }
+        }
+        
+        console.log(by_rarity);
+        
+        function choose_random() {
+            choose_from = [];
+            
+            var rarity = document.forms.namedItem("selector").elements['rarity'];
+            
+            for (var i = 0; i < rarity.length; i++) {
+                if (rarity[i].checked) {
+                    choose_from = choose_from.concat(by_rarity[rarity[i].value]);
+                }
+                
+            }
+            
+            document.getElementById('result').innerHTML = choose_from[Math.floor(Math.random() * choose_from.length)];
+        }
+
+    </script>
+
+    <style>
+    body {
+        text-align: center;
+    }
+    div {
+        width: 100px;
+        display: inline-block;
+    }
+    </style>
+</head>
+
+<body>
+    <h1>Random potion generator</h1>
+    <form id="selector">
+        <label><input type="checkbox" name="rarity" value="Common"><div>Common</div></label><br>
+        <label><input type="checkbox" name="rarity" value="Uncommon"><div>Uncommon</div></label><br>
+        <label><input type="checkbox" name="rarity" value="Rare"><div>Rare</div></label><br>
+        <label><input type="checkbox" name="rarity" value="Very Rare"><div>Very Rare</div></label><br>
+        <label><input type="checkbox" name="rarity" value="Legendary"><div>Legendary</div></label><br>
+    </form>
+   
+    <button type="button" onclick="choose_random()">Generate</button>
+    <p id="result"></p>
+</body>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<head>
+    <link rel="icon" type="image/x-icon" href="https://dnd.wizards.com/sites/default/files/media/favicon_0.ico">
+    
+    <title>D&amp;D Random Disadvantage Generator</title>
+
+    <script>
+        var codeOfHonourIntro = "You take pride in a set of principles that you follow at all times. The specifics can vary, but they always involve 'honorable' behavior. You will do nearly anything – perhaps even risk death – to avoid the label 'dishonorable' (whatever that means to you). "
+        var delusionsIntro = "You believe something that simply is not true. This may cause others to consider you insane. And they may be right! If you suffer from a Delusion, you must roleplay your belief at all times. " 
+        var intoleranceIntro = "You dislike and distrust some (or all) people who are different from you. You may be prejudiced on the basis of class, ethnicity, nationality, religion, sex, or species. Victims of your Intolerance will react poorly to you, giving you a -1 to -6 penalty on all charisma checks when interacting with them (GM's decision). "
+        var obsessionIntro = "Your entire life revolves around a single goal, an overpowering fixation that motivates all of your actions. Whenever it would be wise to deviate from your goal, roll 1d6. On a roll of 1 or 2, you continue to pursue your Obsession, regardless of the consequences. "
+        var pacifismIntro = "You are opposed to violence. "
+        var senseOfDutyIntro = "You feel a strong sense of commitment toward a particular class of people. You will never betray them, abandon them when they're in trouble, or let them suffer or go hungry if you can help. Your sense of duty is bound to: "
+        var vowIntro = "You have sworn an oath to do (or not to do) something. Whatever the oath, you take it seriously; if you didn't, it would not be a disadvantage. This trait is especially appropriate for knights, holy men, and fanatics. "
+
+        var disadvantages = {
+            "Bad sight": {
+                0: "You have poor vision, giving disadvantage to Perception rolls reliant on sight, disadvantage to any other skill roll where it is important that you can see someone or something, and removing any proficiency bonus to hit in combat. This disadvantage is correctable with glasses (suggested price 500g)"
+            },
+            "Bad temper": {
+                0: "You are not in full control of your emotions. In any stressful situation, roll 1d6. On a roll of 1 or 2, you lose your temper and must insult, attack, or otherwise act against the cause of the stress."
+            },
+            "Bloodlust": {
+                0: "You want to see your foes dead. In battle, you must go for killing blows, and put in an extra shot to make sure of a downed foe. Wwhenever you need to accept a surrender, evade a sentry, take a prisoner, etc., roll 1d6. On a roll of 1 or 2, you attempt to kill your foe instead – even if that means breaking the law, compromising stealth, wasting ammo, or violating orders. Out of combat, you never forget that a foe is a foe."
+            },
+            "Code of Honor": {
+                0: codeOfHonourIntro + "Informal code (peers): An informal Code that applies only among your peers. For example -- Code of Honor (Pirate's): Always avenge an insult, regardless of the danger; your buddy's foe is your own; never attack a fellow crewman or buddy except in a fair, open duel. Anything else goes.",
+                1: codeOfHonourIntro + "Formal code (peers): A formal Code that applies only among peers. For example -- Code of Honor (Gentleman's): Never break your word. Never ignore an insult to yourself, a lady, or your flag; insults may only be wiped out by an apology or a duel (not necessarily to the death!). Never take advantage of an opponent in any way; weapons and circumstances must be equal (except in open war). This only applies between gentlemen. A discourtesy from anyone greatly beneath you calls for a whipping, not a duel!",
+                2: codeOfHonourIntro + "Informal code (general): An informal code that applies all the time.",
+                3: codeOfHonourIntro + "A formal Code that applies all the time, or that requires suicide if broken."
+            },
+            "Curious": {
+                0: "You are naturally very inquisitive. This is not the curiosity that affects all PCs ('What’s in that cave? Where did the flying saucer come from?'), but the real thing ('What happens if I push this button?'). When presented with an interesting item or situation, roll 1d6. On a roll of 1 or 2, you examine it even if you know it could be dangerous."
+            },
+            "Delusions": {
+                0: delusionsIntro + "A Minor Delusion affects your behavior, and anyone around you will soon notice it (giving you a -2 to all charisma checks when interacting with others), but it does not keep you from functioning more-or-less normally.",
+                1: delusionsIntro + "A Major Delusion strongly affects your behavior, but does not keep you from living a fairly normal life. You suffer a -4 to all charisma checks when interacting with others.",
+                2: delusionsIntro + "A Severe Delusion affects your behavior so much that it may keep you from functioning in the everyday world. You suffer a -6 to all charisma checks when interacting with others, but they are more likely to fear or pity you than to attack."
+            },
+            "Gluttony": {
+                0: "You are overly fond of good food and drink. Given the chance, you must always burden yourself with extra provisions. You should never willingly miss a meal. When presented with a tempting morsel or good wine that, for some reason, you should resist, roll 1d6. On a roll of 1 or 2, you partake – regardless of the consequences."
+            },
+            "Greed": {
+                0: "You lust for wealth. Any time riches are offered – as payment for fair work, gains from adventure, spoils of crime, or just bait - roll 1d6. On a roll of 1 or 2, you do whatever it takes to get the payoff. Small sums do not tempt you much if you are rich, but if you are poor, you get -1 or more on your roll if a rich prize is in the offing"
+            },
+            "Hard of Hearing": {
+                0: "You are not deaf, but you have some hearing loss. You have disadvantage on any Perception roll reliant on hearing, and on any skill roll where it is important that you understand someone (if you are the one talking, this disadvantage doesn’t affect you)."
+            },
+            "Honesty": {
+                0: "You must obey the law, and do your best to get others to do so as well. In an area with little or no law, you do not 'go wild' – you act as though the laws of your own home were in force. You also assume that others are honest unless you know otherwise. This is a disadvantage, because it often limits your options! When faced with the 'need' to break unreasonable laws roll 1d6; on a roll of 1 or 2, you must obey the law, whatever the consequences. If you manage to resist your urges and break the law, roll a second d6 afterward. On a roll of 1 or 2, you must turn yourself in to the authorities!"
+            },
+            "Impulsiveness": {
+                0: "You hate talk and debate. You prefer action! When you are alone, you act first and think later. In a group, when your friends want to stop and discuss something, you should put in your two cents' worth quickly – if at all – and then do something. Roleplay it! Whenever it would be wise to wait and ponder, roll 1d6. On a roll of 1 or 2, you must act."
+            },
+            "Intolerance": {
+                0: intoleranceIntro + "You are thoroughly intolerant, and suffer disadvantage on any skill check to interact with anyone not of your own class, ethnicity, nationality, religion, or species (pick one).",
+                1: intoleranceIntro + "Your intolerance is directed at only one specific class, ethnicity, nationality, religion, sex, or species."
+            },
+            "Jealousy": {
+                0: "You react poorly toward those who seem smarter, more attractive, or better off than you! You resist any plan proposed by a 'rival,' and hate it if someone else is in the limelight. You suffer a -3 penalty to any charisma check made to interact with the victim(s) of your jealousy."
+            },
+            "Lecherousness": {
+                0: "You have an unusually strong desire for romance. Whenever in more than the briefest contact with an appealing member of the sex you find attractive, roll 1d6. On a roll of  1 or 2; or 3 if the person is handsome/beautiful; or 4 if the person is extremely handsome/beautifl, you must make a 'pass,' using whatever wiles and skills you can bring to bear."
+            },
+            "Obsession": {
+                0: "You have a short-term goal (e.g., assassinating someone).",
+                1: "You have a long-term goal (e.g., becoming President)."
+            },
+            "Overconfidence": {
+                0: "You believe that you are far more powerful, intelligent, or competent than you really are. You may be proud and boastful or just quietly determined, but you must roleplay this trait. Any time the GM feels you show an unreasonable degree of caution, roll 1d6. On a roll of a 1 or 2, you must go ahead as though you were able to handle the situation! Caution is not an option. You receive +2 on all charisma rolls when interacting with young or naive individuals (who believe you are as good as you say you are), but -2 on all charisma rolls when interacting with experienced individuals."
+            },
+            "Pacifism": {
+                0: pacifismIntro + "Reluctant Killer: You get -4 to hit a person (not a monster, machine, etc.) with a deadly attack, or -2 if you can’t see their face. If you kill someone, roll 3d6 – you're morose and useless for that many days.",
+                1: pacifismIntro + "Cannot Harm Innocents: You may fight – you may even start fights – but you may only use deadly force on a foe that is attempting to do you serious harm."
+            },
+            "Phobias": {
+                0: "A 'phobia' is a fear of a specific item, creature, or circumstance. If you have a phobia, you may temporarily master it by making a roll of 3 or higher on 1d6... but the fear persists. Even if you master a phobia, you will be at -2 to all intelligence or dexterity saves, and -2 to all skill rolls while the cause of your fear is present, and you must roll again every 10 minutes to see if the fear overcomes you. On the roll of a 1 or a 2, you will cringe, flee, panic, or otherwise react in a manner that precludes sensible action. Even the mere threat of the feared object requires a roll, but with a bonus of +2."
+            },
+            "Sense of Duty": {
+                0: senseOfDutyIntro + "an individual (the President, your wingman, etc.).",
+                1: senseOfDutyIntro + "a small group (e.g., your close friends, adventuring companions, or squad).",
+                2: senseOfDutyIntro + "a large group (e.g., a nation or religion, or everyone you know personally).",
+                3: senseOfDutyIntro + "an entire race (all humanity, all Elves, etc.).",
+                4: senseOfDutyIntro + "an every living being."
+            },
+            "Truthfulness": {
+                0: "You hate to tell a lie – or you are just very bad at it. Whenever you must keep silent about an uncomfortable truth (lying by omission), roll 1d6. If you actually have to tell a falsehood, roll 1d6-3. On a roll of a 2 or less, you blurt out the truth, or stumble so much that your lie is obvious. You have a permanent disadvantage on Deception and Persuasion."
+            },
+            "Unluckiness": {
+                0: "You have rotten luck. Things go wrong for you – and usually at the worst possible time. Once per play session, the GM will arbitrarily and maliciously make something go wrong for you. You miss a vital die roll, or the enemy (against all odds) shows up at the worst possible time. If the plot of the adventure calls for something bad to happen to someone, it's you. The GM may not kill you outright with 'bad luck,' but anything less than that is fine."
+            },
+            "Vow": {
+                0: "Minor Vow --  for example: silence during daylight hours; vegetarianism; chastity (yes, for game purposes, this is minor).",
+                1: "Major Vow -- for example: use no edged weapons; keep silence at all times; never sleep indoors; own no more than your horse can carry.",
+                2: "Great Vow -- for example: never refuse any request for aid; always fight with the wrong hand; hunt a given foe until you destroy him; challenge every knight you meet to combat."
+            }
+        }
+        
+        function choose_random() {
+            var keys = Object.keys(disadvantages)
+            var theKey = keys[Math.floor(keys.length * Math.random())]
+            var item = disadvantages[theKey]
+            var innerKeys = Object.keys(item)
+            document.getElementById("result").innerHTML = "<br><span>" + theKey + "</span><br><br>" + item[innerKeys[Math.floor(innerKeys.length * Math.random())]]
+        }
+    </script>
+    <style>
+    body {
+        text-align: center;
+    }
+    p {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    span {
+        font-weight: bold;
+        text-size: 110%;
+    }
+    </style>
+</head>
+<body>
+    <h1>Random disadvantage generator</h1>
+    <button type="button" onclick="choose_random()">Generate</button>
+    <p id="result"></p>
+</body>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>D&amp;D Random NPC Generator</title>
+
+	<meta name="viewport" content="width=device-width; initial-scale=1.0;" />
+	<link rel="icon" type="image/x-icon" href="https://dnd.wizards.com/sites/default/files/media/favicon_0.ico">
+
+	<link rel="stylesheet" type="text/css" href="../tether.min.css">
+	<link rel="stylesheet" type="text/css" href="../bootstrap-4.0.0-alpha-6.min.css">
+	<style>
+		.output-row {
+			border: 1px solid rgba(0, 0, 0, 0.15);
+			border-radius: 0.25rem;
+			margin-bottom: 0.25rem;
+			padding: 0.25rem;
+		}
+	</style>
+</head>
+<body>
+<div class="jumbotron">
+	<div class="container">
+		<div class="row">
+			<div class="col-4">
+				<div class="form-group">
+					<label for="race">Race</label>
+					<select class="form-control" id="race">
+						<option value="" selected>Random</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-4">
+				<div class="form-group">
+					<label for="gender">Gender</label>
+					<select class="form-control" id="gender">
+						<option value="" selected>Random</option>
+						<option value="Male">Male</option>
+						<option value="Female">Female</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-4 align-self-center text-center">
+				<div>
+				<a id="generate" href="#" class="btn btn-primary" role="button">Roll<i class="fa fa-chevron-right"></i></a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container" id="output">
+	<hr>
+	<footer>
+		<p class="text-center">&copy; The PB&J&F Collective 2018</p>
+	</footer>
+</div>
+
+<script type="text/javascript" src="../jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../tether.min.js"></script>
+<script type="text/javascript" src="../bootstrap-4.0.0-alpha-6.min.js"></script>
+<script type="text/javascript" src="data.js"></script>
+
+<script>
+	"use strict";
+	const $selRace = $(`#race`);
+	const $selGender = $(`#gender`);
+	const $btnGenerate = $(`#generate`);
+	const $out = $(`#output`);
+
+	DATA.race.forEach(r => $selRace.append(`<option value=${r.name}>${r.name}</option>`));
+	$btnGenerate.on("click", generate);
+	// initial generation
+	generate();
+
+	// dice roll
+	function d (max) {
+		return Math.floor(Math.random() * max) + 1;
+	}
+
+	// roll on list
+	function r (list) {
+		if (!list.length) return null;
+		return list[d(list.length) - 1];
+	}
+
+	function generate() {
+		function genAge (age) {
+			return d(age.max - age.min) + age.min;
+		}
+
+		function genName (race, gender) {
+			const dRace = DATA.race.find(r => r.name === race);
+			const first = gender === "Male" ? r(dRace.maleFirst.concat(dRace.neutralFirst || [])) : r(dRace.femaleFirst.concat(dRace.neutralFirst || []));
+			const last = r(dRace.last || []);
+			return [first, last].filter(it => it).join(" ");
+		}
+
+		const race = $selRace.val() || r(DATA.race.map(r => r.name));
+		const gender = $selGender.val() || r(["Male", "Female"]);
+		const name = genName(race, gender);
+		const age = genAge(DATA.race.find(r => r.name === race).age);
+		const traits = [r(DATA.trait.positive), r(DATA.trait. neutral), r(DATA.trait.negative)];
+
+		$out.prepend(`
+			<div class="row output-row">
+				<div class="col-12"><b>Name:</b> ${name}</div>
+				<div class="col-4"><b>Race:</b> ${race}</div>
+				<div class="col-4"><b>Gender:</b> ${gender}</div>
+				<div class="col-4"><b>Age:</b> ${age}</div>
+
+				<div class="col-12"><b>Traits:</b> ${traits.join(", ")}</div>
+			</div>
+		`);
+	}
+</script>
+</body>
+</html>

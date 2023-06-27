@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>MTG:A Export Cleaner</title>
+
+	<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+	<link rel="icon" type="image/x-icon" href="https://d1u5p3l4wpay3k.cloudfront.net/mtgsalvation_gamepedia/6/64/Favicon.ico">
+
+	<link rel="stylesheet" type="text/css" href="../tether.min.css">
+	<link rel="stylesheet" type="text/css" href="../bootstrap-4.0.0-alpha-6.min.css">
+
+	<style>
+		textarea {
+			height: calc(100vh - 20rem);
+		}
+
+		.wrp-btn {
+			justify-content: center;
+			align-items: center;
+			display: flex;
+		}
+
+		.copied-tip {
+			position: fixed;
+			background: transparent;
+			user-select: none;
+			z-index: 1000;
+			width: 80px;
+			height: 24px;
+			line-height: 24px;
+		}
+
+		.copied-tip > span {
+			display: inline-block;
+			width: 100%;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+<div class="jumbotron">
+	<div class="container">
+		<div class="row">
+			<div class="col-12 mb-3">
+				<h3>MTG: Arena Export Cleaner</h3>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-5">
+				<textarea class="form-control" id="ipt" placeholder="11 Plains (RIX) 192"></textarea>
+			</div>
+
+			<div class="col-2 wrp-btn">
+				<button id="clean" class="btn btn-primary">Strip Tags 🡆</button>
+			</div>
+
+			<div class="col-5">
+				<textarea class="form-control" disabled id="out" placeholder="11 Plains"></textarea>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container" id="output">
+	<footer>
+		<p class="text-center">&copy; The PB&J&F Collective 2018</p>
+	</footer>
+</div>
+
+<script type="text/javascript" src="../jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../tether.min.js"></script>
+<script type="text/javascript" src="../bootstrap-4.0.0-alpha-6.min.js"></script>
+
+<script>
+	"use strict";
+
+	function showCopiedEffect ($ele, text = "Copied!") {
+		const $temp = $(`<div class="copied-tip"><span>${text}</span></div>`);
+		const top = $(window).scrollTop();
+		const pos = $ele.offset();
+		$temp.css({
+			top: (pos.top - 17) - top,
+			left: pos.left - 36 + ($ele.width() / 2)
+		}).appendTo($(`body`)).animate({
+			top: "-=8",
+			opacity: 0
+		}, 250, () => {
+			$temp.remove();
+		});
+	}
+
+	function copyText (text) {
+		const $temp = $(`<textarea id="copy-temp" style="position: fixed; top: -1000px; left: -1000px; width: 1px; height: 1px;">${text}</textarea>`);
+		$(`body`).append($temp);
+		$temp.select();
+		document.execCommand("Copy");
+		$temp.remove();
+	}
+
+	const $in = $(`#ipt`);
+	const $out = $(`#out`);
+
+	$(`#clean`).click(() => {
+		const out = ($in.val() || "").split("\n").map(line => line.replace(/\s*\(.*?\)\s*.+$/i, "")).join("\n").trim();
+		$out.val(out);
+		copyText(out);
+		showCopiedEffect($out);
+	});
+</script>
+</body>
+</html>

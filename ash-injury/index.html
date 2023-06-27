@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>D&amp;D Injury Houserules</title>
+
+	<meta name="viewport" content="width=device-width; initial-scale=1.0;" />
+	<link rel="icon" type="image/x-icon" href="https://dnd.wizards.com/sites/default/files/media/favicon_0.ico">
+
+	<link rel="stylesheet" type="text/css" href="../tether.min.css">
+	<link rel="stylesheet" type="text/css" href="../bootstrap-4.0.0-alpha-6.min.css">
+	<script type="text/javascript" src="data.js"></script>
+	<style>
+		caption {
+			caption-side: top;
+		}
+
+		.opening-text {
+			padding: 3rem 1.5rem;
+		}
+
+		.output-row {
+			border: 1px solid rgba(0, 0, 0, 0.15);
+			border-radius: 0.25rem;
+			margin-bottom: 0.25rem;
+			padding: 0.25rem;
+		}
+	</style>
+</head>
+<body>
+
+<div class="container opening-text">
+	<p class="lead">
+	<i>&ldquo;When you are dropped to 0 hit points you gain 1 Injury Token and must immediately roll on the Injury Tables. This can be done with the macro #injury, which will display the Severity of the Injury as an attack roll (1 to 20) and then the Type of Injury as the damage (1 to 12). The Injuries are cumulative and are designed in degrees of lethality until you gain your 5th Injury Token, upon which you succumb to your wounds and DIE.</i>
+	</p>
+	<ul class="lead">
+		<li><i>A Short Rest of no less than 1 hour will reduce your Injury Token count by 1. A Long Rest will reduce it to 0.</i></li>
+		<li><i>A player can opt to roll on the appropriate Injury Table in lieu of a death save. Should they choose this option, they neither save nor fail, and instead incur the effects of the injury. Players can do this an unlimited number of times.&rdquo;</i></li>
+	</ul>
+</div>
+
+<div class="jumbotron">
+	<div class="container">
+		<div class="row">
+			<div class="col-8">
+				<div class="form-group">
+					<label for="tokens">Injury Tokens</label>
+					<select class="form-control" id="tokens">
+						<option value="1" selected>1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-4 align-self-center text-center">
+				<div>
+					<a id="roll" href="#" class="btn btn-primary" role="button">Roll<i class="fa fa-chevron-right"></i></a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="container" id="output"></div>
+<div class="container" id="tables"></div>
+<div class="container">
+	<hr>
+	<footer>
+		<p class="text-center">&copy; The PB&J&F Collective // 2018</p>
+	</footer>
+</div>
+
+<script type="text/javascript" src="../jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../tether.min.js"></script>
+<script type="text/javascript" src="../bootstrap-4.0.0-alpha-6.min.js"></script>
+
+<script>
+	"use strict";
+
+	// dice roll
+	function d (max) {
+		return Math.floor(Math.random() * max) + 1;
+	}
+
+	const $selTokens = $(`#tokens`);
+	const $btnRoll = $(`#roll`);
+	const $out = $(`#output`);
+	const $tbls = $(`#tables`);
+
+	function displayTable(title, t, skipHr) {
+		let stack = `<table class="table table-striped"><caption>${title}</caption><thead><tr><th style="width: 10%; text-align: center;">Roll</th><th style="width: 20%">Name</th><th style="width: 70%">Effect</th></tr></thead><tbody>`;
+		t.forEach((r, i) => {
+			stack += `<tr><td style="text-align: center">${i + 1}</td><td>${r.name}</td><td>${r.effect}</td></tr>`
+		});
+		stack += "</tbody></table>";
+		$tbls.append(stack);
+		if (!skipHr) $tbls.append(`<hr>`);
+	}
+
+	displayTable("Minor", INJ_MINOR);
+	displayTable("Medium", INJ_MEDIUM);
+	displayTable("Major", INJ_MAJOR);
+	displayTable("Deadly", INJ_DEADLY, true);
+
+	function doOutput (table) {
+		const r = d(12);
+		const result = table[r - 1];
+		$out.prepend(`
+			<div class="row output-row">
+				<div class="col-3"><b>Name:</b> ${result.name}</div><div class="col-9"><b>Effect:</b> ${result.effect}</div>
+			</div>
+		`);
+	}
+
+
+	function r1 () {
+		const r = d(20);
+		if (r < 3) r2();
+		else if (r < 13) doOutput(INJ_MINOR);
+		else if (r < 19) doOutput(INJ_MEDIUM);
+		else doOutput(INJ_MAJOR);
+	}
+
+	function r2 () {
+		const r = d(20);
+		if (r < 3) r3();
+		else if (r < 5) doOutput(INJ_MINOR);
+		else if (r < 7) doOutput(INJ_MEDIUM);
+		else if (r < 11) doOutput(INJ_MINOR);
+		else if (r < 19) doOutput(INJ_MEDIUM);
+		else doOutput(INJ_MAJOR);
+	}
+
+	function r3 () {
+		const r = d(20);
+		if (r < 3) r4();
+		else if (r < 7) doOutput(INJ_MAJOR);
+		else if (r < 11) doOutput(INJ_MEDIUM);
+		else if (r < 12) doOutput(INJ_MINOR);
+		else if (r < 17) doOutput(INJ_MEDIUM);
+		else doOutput(INJ_DEADLY);
+	}
+
+	function r4 () {
+		const r = d(20);
+		if (r < 3) doOutput(INJ_DEADLY);
+		else if (r < 11) doOutput(INJ_MAJOR);
+		else if (r < 12) doOutput(INJ_MINOR);
+		else if (r < 16) doOutput(INJ_MEDIUM);
+		else if (r < 19) doOutput(INJ_MAJOR);
+		else doOutput(INJ_DEADLY);
+	}
+
+	$btnRoll.on("click", () => {
+		switch (Number($selTokens.val())) {
+			case 1:
+				r1();
+				break;
+			case 2:
+				r2();
+				break;
+			case 3:
+				r3();
+				break;
+			case 4:
+				r4();
+				break;
+		}
+	});
+
+	// INJ_MINOR
+	// INJ_MEDIUM
+	// INJ_MAJOR
+	// INJ_DEADLY
+
+</script>

@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<head>
+    <link rel="icon" type="image/x-icon" href="https://dnd.wizards.com/sites/default/files/media/favicon_0.ico">
+    
+    <title>D&amp;D Random Spell Generator</title>
+
+    <script type="text/javascript" src="https://donjon.bin.sh/5e/spells/spell_data.js"></script>
+
+    <script>
+        var by_level = {
+            "All": [],
+            "Cantrip": [],
+            "1st": [],
+            "2nd": [],
+            "3rd": [],
+            "4th": [],
+            "5th": [],
+            "6th": [],
+            "7th": [],
+            "8th": [],
+            "9th": []
+        };
+        
+        var by_level_wizard = {
+            "All": [],
+            "Cantrip": [],
+            "1st": [],
+            "2nd": [],
+            "3rd": [],
+            "4th": [],
+            "5th": [],
+            "6th": [],
+            "7th": [],
+            "8th": [],
+            "9th": []
+        };
+
+        for (var key in spell_data) {
+            if (spell_data.hasOwnProperty(key)) {
+                var spell = spell_data[key];
+
+                by_level["All"].push(spell.name)
+
+                by_level[spell.level].push(spell.name);
+                if ("Wizard" in spell.class) {
+                    by_level_wizard[spell.level].push(spell.name);
+                    by_level_wizard["All"].push(spell.name)
+                }
+            }
+        }
+        
+        console.log(by_level);
+        
+        function choose_random() {
+            var choose_from;
+            
+            if (document.getElementById('wizardOnly').checked) {
+                choose_from = by_level_wizard[document.getElementById('levels').value];
+            } else {
+                choose_from = by_level[document.getElementById('levels').value];
+            }
+            
+            document.getElementById('result').innerHTML = choose_from[Math.floor(Math.random() * choose_from.length)];
+        }
+
+    </script>
+
+    <style>
+    body {
+        text-align: center;
+    }
+    </style>
+</head>
+
+<body>
+    <h1>Random spellbook/scroll generator</h1>
+    <label><input type="checkbox" id="wizardOnly">Wizard only</label><br><br>
+    <select id="levels">
+        <option value="All">All</option>
+        <option value="Cantrip">Cantrip</option>
+        <option value="1st">1st</option>
+        <option value="2nd">2nd</option>
+        <option value="3rd">3rd</option>
+        <option value="4th">4th</option>
+        <option value="5th">5th</option>
+        <option value="6th">6th</option>
+        <option value="7th">7th</option>
+        <option value="8th">8th</option>
+        <option value="9th">9th</option>
+    </select>
+    <button type="button" onclick="choose_random()">Generate</button>
+    <p id="result"></p>
+</body>
